@@ -250,6 +250,35 @@ AC_PATH_TOOL(GPERF, gperf)
 if test -z "$GPERF" ; then
         AC_MSG_ERROR([*** gperf not found])
 fi
+AC_ARG_WITH(firmware-path,
+       AS_HELP_STRING([--with-firmware-path=DIR[[[:DIR[...]]]]],
+          [Firmware search path (default="")]),
+       [], [with_firmware_path=""])
+OLD_IFS=$IFS
+IFS=:
+for i in $with_firmware_path; do
+       if test "x${FIRMWARE_PATH}" = "x"; then
+              FIRMWARE_PATH="\\\"${i}/\\\""
+       else
+              FIRMWARE_PATH="${FIRMWARE_PATH}, \\\"${i}/\\\""
+       fi
+done
+IFS=$OLD_IFS
+AC_SUBST(FIRMWARE_PATH)
+AS_IF([test "x${FIRMWARE_PATH}" != "x"], [ AC_DEFINE(HAVE_FIRMWARE, 1, [Define if FIRMWARE is available]) ])
+AM_CONDITIONAL(ENABLE_FIRMWARE, [test "x${FIRMWARE_PATH}" != "x"])
+
+# ------------------------------------------------------------------------------
+AC_ARG_ENABLE([gudev],
+       AS_HELP_STRING([--disable-gudev], [disable Gobject libudev support @<:@default=enabled@:>@]),
+       [], [enable_gudev=yes])
+AS_IF([test "x$enable_gudev" = "xyes"], [ PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.22.0 gobject-2.0 >= 2.22.0]) ])
+AM_CONDITIONAL([ENABLE_GUDEV], [test "x$enable_gudev" = "xyes"])
+
+# ------------------------------------------------------------------------------
+AC_ARG_ENABLE([keymap],
+        AS_HELP_STRING([--disable-keymap], [disable keymap fixup support @<:@default=enabled@:>@]),
+        [], [enable_keymap=yes])
 
 # ------------------------------------------------------------------------------
 AC_ARG_ENABLE([manpages], AS_HELP_STRING([--disable-manpages],[disable manpages]),[],[enable_manpages=no])

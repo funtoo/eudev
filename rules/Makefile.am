@@ -23,6 +23,11 @@ dist_udevrules_DATA += \
 	80-net-name-slot.rules
 endif
 
+if ENABLE_FIRMWARE
+dist_udevrules_DATA += \
+	50-firmware.rules
+endif
+
 if HAVE_BLKID
 dist_udevrules_DATA += \
 	60-persistent-storage.rules
